@@ -4,54 +4,7 @@ import "./App.css";
 const randomId = () => Math.floor(Math.random() * (1000000 - 1) + 1);
 
 function App() {
-    const [list, setList] = useState([
-        {
-            id: randomId(),
-            name: "Coffee",
-            sublist: [
-                {
-                    id: randomId(),
-                    name: "black",
-                    sublist: [
-                        { id: randomId(), name: "small", sublist: [] },
-                        { id: randomId(), name: "big", sublist: [] }
-                    ]
-                },
-                {
-                    id: randomId(),
-                    name: "Green",
-                    sublist: [
-                        { id: randomId(), name: "small", sublist: [] },
-                        {
-                            id: randomId(),
-                            name: "medium",
-                            sublist: [
-                                {
-                                    id: randomId(),
-                                    name: "GREENFIELD",
-                                    sublist: []
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            id: randomId(),
-            name: "Tea",
-            sublist: [
-                {
-                    id: randomId(),
-                    name: "black",
-                    sublist: [
-                        { id: randomId(), name: "small", sublist: [] },
-                        { id: randomId(), name: "big", sublist: [] }
-                    ]
-                }
-            ]
-        }
-    ]);
+    const [list, setList] = useState([]);
     const [active, setActive] = useState("");
 
     const addSublist = (e, id) => {
@@ -94,10 +47,11 @@ function App() {
     };
 
     const remove = id => {
+        console.log(id)
         let newList = [...list];
         let a = []
         let findDeep = function(data, id) {
-            return data.find(function(item) {
+            return data.some(function(item) {
                 if (item.id === id) {
                     a.push(item)
                     data.splice(data.indexOf(item), 1);
@@ -141,16 +95,17 @@ function App() {
     }
 
     const remoteSublist = (id) => {
+        
         let newList = [...list]
         let findDeep = function(data, id) {
             return data.some(function(item) {
                 if (item.id === id) {
-                    item.sublist = []
+                    item.sublist=[]
                     return true;
                 } else if (item.sublist) return findDeep(item.sublist, id);
             });
         };
-        findDeep(newList, id) &&
+        findDeep(newList, id);
         setList(newList)
     }
 
@@ -196,8 +151,8 @@ function Item({ name, sublist, addSublist, active, setActive, next, remove, inde
                 { parentArrayLength - 1 === index && parentArrayLength !== 1 && <button onClick={() => up(next, index)} >&uarr;</button>}
                 { index === 0  && parentArrayLength !== 1 && <button onClick={() => down(next, index)} >&darr;</button>}
                 { parentArrayLength !== 1 && index !== 0 && parentArrayLength - 1 !== index && <> <button  onClick={() => up(next, index)} >&uarr;</button> <button onClick={() => down(next, index)} >&darr;</button> </>}
-                { sublist.length ? <button onClick={() => remoteSublist(next)}>Remote Sublist</button> : ""}
-                <button onClick={() => setActive(next)}> Add Sublist</button>
+                { sublist.length ? <button onClick={() => remoteSublist(next)}>Remote Sublist</button> : <button onClick={() => setActive(next)}> Add Sublist</button>}
+                
                 <button onClick={() => remove(next)}>Remove</button>
             </div>
             <ul style={{ margin: "5px 25px" }}>
@@ -221,7 +176,7 @@ function Item({ name, sublist, addSublist, active, setActive, next, remove, inde
                             />
                         );
                     })}
-                {active === next && (
+                {(active === next || sublist.length !==0) && (
                     <form onSubmit={e => addSublist(e, active)}>
                         <input name="input" type="text" />
                         <button>Add</button>
