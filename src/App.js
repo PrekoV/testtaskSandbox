@@ -97,11 +97,10 @@ function App() {
         let newList = [...list];
         let a = []
         let findDeep = function(data, id) {
-            return data.some(function(item) {
+            return data.find(function(item) {
                 if (item.id === id) {
                     a.push(item)
                     data.splice(data.indexOf(item), 1);
-                    return true;
                 } else if (item.sublist) return findDeep(item.sublist, id);
             });
         };
@@ -141,6 +140,20 @@ function App() {
         setList(newList)
     }
 
+    const remoteSublist = (id) => {
+        let newList = [...list]
+        let findDeep = function(data, id) {
+            return data.some(function(item) {
+                if (item.id === id) {
+                    item.sublist = []
+                    return true;
+                } else if (item.sublist) return findDeep(item.sublist, id);
+            });
+        };
+        findDeep(newList, id) &&
+        setList(newList)
+    }
+
     return (
         <div className="App">
             <ul>
@@ -158,6 +171,7 @@ function App() {
                         parentArrayLength = {list.length}
                         up={up}
                         down={down}
+                        remoteSublist={remoteSublist}
                     />
                 ))}
                 <li>
@@ -173,17 +187,16 @@ function App() {
 
 export default App;
 
-function Item({ name, sublist, addSublist, active, setActive, next, remove, index, parentArrayLength, up, down }) {
+function Item({ name, sublist, addSublist, active, setActive, next, remove, index, parentArrayLength, up, down, remoteSublist }) {
     let next1;
     return (
         <li>
             <div>
-                {name}{" "}
-                {/* {sublist.length - 1 === index && <button  >up</button>} */}
+                {name}
                 { parentArrayLength - 1 === index && parentArrayLength !== 1 && <button onClick={() => up(next, index)} >&uarr;</button>}
                 { index === 0  && parentArrayLength !== 1 && <button onClick={() => down(next, index)} >&darr;</button>}
                 { parentArrayLength !== 1 && index !== 0 && parentArrayLength - 1 !== index && <> <button  onClick={() => up(next, index)} >&uarr;</button> <button onClick={() => down(next, index)} >&darr;</button> </>}
-                {console.log(name, index, parentArrayLength)}
+                { sublist.length ? <button onClick={() => remoteSublist(next)}>Remote Sublist</button> : ""}
                 <button onClick={() => setActive(next)}> Add Sublist</button>
                 <button onClick={() => remove(next)}>Remove</button>
             </div>
@@ -204,6 +217,7 @@ function Item({ name, sublist, addSublist, active, setActive, next, remove, inde
                                 parentArrayLength={sublist.length}
                                 up={up}
                                 down = {down}
+                                remoteSublist = {remoteSublist}
                             />
                         );
                     })}
