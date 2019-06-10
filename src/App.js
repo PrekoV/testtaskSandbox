@@ -151,9 +151,9 @@ function Item({ name, sublist, addSublist, active, setActive, next, remove, inde
                 { parentArrayLength - 1 === index && parentArrayLength !== 1 && <button onClick={() => up(next, index)} >&uarr;</button>}
                 { index === 0  && parentArrayLength !== 1 && <button onClick={() => down(next, index)} >&darr;</button>}
                 { parentArrayLength !== 1 && index !== 0 && parentArrayLength - 1 !== index && <> <button  onClick={() => up(next, index)} >&uarr;</button> <button onClick={() => down(next, index)} >&darr;</button> </>}
-                { sublist.length ? <button onClick={() => remoteSublist(next)}>Remote Sublist</button> : <button onClick={() => setActive(next)}> Add Sublist</button>}
+                { sublist.length!==0 ? <button onClick={() => remoteSublist(next)}>Remote Sublist</button> : <button onClick={() => setActive(next)}> Add Sublist</button>}
                 
-                <button onClick={() => remove(next)}>Remove</button>
+                <button onClick={() => {remove(next); setActive(null)}}>Remove</button>
             </div>
             <ul style={{ margin: "5px 25px" }}>
                 {sublist !== null &&
